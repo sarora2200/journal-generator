@@ -1,0 +1,368 @@
+/* Reset & Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Quicksand', sans-serif;
+    background: #f5f0eb;
+    color: #333;
+    padding: 20px;
+}
+
+#app {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header */
+header {
+    text-align: center;
+    padding: 30px 0 20px;
+    background: linear-gradient(135deg, #f8f0e7, #e8ddd0);
+    border-radius: 20px;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    color: #4a3728;
+}
+
+header p {
+    font-size: 1.2rem;
+    color: #7a6a5a;
+}
+
+/* Settings Panel */
+.settings-panel {
+    background: white;
+    padding: 25px 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+}
+
+.settings-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.settings-group label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #5a4a3a;
+    min-width: 80px;
+}
+
+.btn-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.btn-group button {
+    padding: 6px 14px;
+    border: 2px solid #ddd;
+    background: white;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-family: 'Quicksand', sans-serif;
+    transition: all 0.2s;
+}
+
+.btn-group button:hover {
+    background: #f0ebe6;
+}
+
+.btn-group button.active {
+    background: #4a3728;
+    color: white;
+    border-color: #4a3728;
+}
+
+.btn-generate, .btn-download {
+    padding: 12px 28px;
+    border: none;
+    border-radius: 30px;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-generate {
+    background: #4a3728;
+    color: white;
+}
+
+.btn-generate:hover {
+    background: #2d1f14;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74,55,40,0.3);
+}
+
+.btn-download {
+    background: #2d7d6e;
+    color: white;
+}
+
+.btn-download:hover {
+    background: #1e5f52;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(45,125,110,0.3);
+}
+
+/* Journal Preview */
+.journal-preview {
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    min-height: 500px;
+}
+
+/* --- Journal Page Styles (Printed) --- */
+.journal-page {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto 30px;
+    padding: 40px 45px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    page-break-after: always;
+    position: relative;
+    min-height: 600px;
+}
+
+/* Dotted Background */
+.journal-page.dotted {
+    background-image: radial-gradient(circle, #ddd 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-color: white;
+}
+
+/* Cover Page */
+.journal-page.cover {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 700px;
+    border: 3px solid #e8ddd0;
+}
+
+.journal-page.cover h1 {
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.journal-page.cover .year {
+    font-size: 6rem;
+    font-weight: 700;
+    margin: 10px 0;
+}
+
+.journal-page.cover .subtitle {
+    font-size: 1.2rem;
+    opacity: 0.7;
+    margin-top: 20px;
+}
+
+/* Monthly Pages */
+.month-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 20px 0 10px;
+    border-bottom: 3px solid currentColor;
+    margin-bottom: 20px;
+}
+
+.month-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.month-grid .day-header {
+    font-weight: 600;
+    padding: 6px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.month-grid .day {
+    padding: 8px 0;
+    border-radius: 4px;
+    min-height: 40px;
+}
+
+.month-grid .day.empty {
+    opacity: 0.3;
+}
+
+.month-grid .day.weekend {
+    color: #c0392b;
+}
+
+/* Tracker Pages */
+.tracker-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.tracker-item {
+    padding: 12px 16px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.tracker-item .label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.tracker-item .dots {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.tracker-item .dot {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Doodle Pages */
+.doodle-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 15px;
+}
+
+.doodle-item {
+    text-align: center;
+    padding: 16px 8px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+
+.doodle-item .icon {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 8px;
+}
+
+/* Bucket List */
+.bucket-list {
+    columns: 2;
+    column-gap: 30px;
+    padding: 10px 0;
+}
+
+.bucket-list li {
+    list-style: none;
+    padding: 6px 0 6px 30px;
+    position: relative;
+    break-inside: avoid;
+}
+
+.bucket-list li::before {
+    content: "☐";
+    position: absolute;
+    left: 0;
+    font-size: 1.2rem;
+}
+
+/* Seasonal Pages */
+.seasonal-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.season-card {
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    background: #f8f4f0;
+}
+
+.season-card h3 {
+    margin-bottom: 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .settings-panel {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .settings-group {
+        flex-wrap: wrap;
+    }
+    .journal-page {
+        padding: 20px;
+    }
+    .tracker-grid,
+    .doodle-grid,
+    .seasonal-grid {
+        grid-template-columns: 1fr;
+    }
+    .bucket-list {
+        columns: 1;
+    }
+    .journal-page.cover h1 {
+        font-size: 2.5rem;
+    }
+    .journal-page.cover .year {
+        font-size: 3.5rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .settings-panel,
+    header,
+    .btn-generate,
+    .btn-download {
+        display: none !important;
+    }
+    .journal-preview {
+        padding: 0;
+        box-shadow: none;
+        background: none;
+    }
+    .journal-page {
+        box-shadow: none;
+        border-radius: 0;
+        page-break-after: always;
+        min-height: 100vh;
+    }
+}
