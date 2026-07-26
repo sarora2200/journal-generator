@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>2026 Unique Journal Generator</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Quicksand:wght@300;400;600&family=Dancing+Script:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet" />
+    <!-- html2canvas and jsPDF for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header>
+            <h1>📓 2026 Journal Generator</h1>
+            <p>Create your unique printable journal bundle</p>
+        </header>
+
+        <!-- Settings Panel -->
+        <section class="settings-panel">
+            <div class="settings-group">
+                <label>Size:</label>
+                <div class="btn-group">
+                    <button class="btn-size active" data-size="a4">A4 (8.5" x 11")</button>
+                    <button class="btn-size" data-size="a5">A5 (5.83" x 8.27")</button>
+                </div>
+            </div>
+            <div class="settings-group">
+                <label>Background:</label>
+                <div class="btn-group">
+                    <button class="btn-bg active" data-bg="dots">With Dots</button>
+                    <button class="btn-bg" data-bg="plain">Plain</button>
+                </div>
+            </div>
+            <div class="settings-group">
+                <label>Color Theme:</label>
+                <div class="btn-group">
+                    <button class="btn-theme active" data-theme="pastel">Pastel</button>
+                    <button class="btn-theme" data-theme="vibrant">Vibrant</button>
+                    <button class="btn-theme" data-theme="mono">Monochrome</button>
+                    <button class="btn-theme" data-theme="earth">Earth Tones</button>
+                </div>
+            </div>
+            <button id="btn-generate" class="btn-generate">✨ Generate New Journal</button>
+            <button id="btn-download" class="btn-download">📥 Download PDF</button>
+        </section>
+
+        <!-- Journal Preview -->
+        <section id="journal-preview" class="journal-preview">
+            <!-- Journal will be rendered here -->
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
