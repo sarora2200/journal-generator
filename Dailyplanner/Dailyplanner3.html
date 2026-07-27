@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Self-Care Journal · One Page</title>
+
+    <!-- html2pdf (for download) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-page: #faf8f5;
+            --text-main: #2b2521;
+            --text-muted: #5a5048;
+            --border-light: #e0d7cd;
+            --line-dotted: #c9bdb0;
+            --accent-soft: #f0ebe4;
+            --font-serif: 'Georgia', 'Times New Roman', serif;
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        html,
+        body {
+            min-height: 100vh;
+            background: #ede8e0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            font-family: var(--font-sans);
+            color: var(--text-main);
+            padding: 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ─── DOWNLOAD BUTTON ─── */
+        .download-bar {
+            width: 100%;
+            max-width: 210mm;
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+
+        .btn-pdf {
+            background: #3a322c;
+            border: none;
+            color: #f6f3ee;
+            font-family: var(--font-sans);
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            padding: 10px 26px;
+            border-radius: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-pdf:hover {
+            background: #5a4d44;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-pdf:active {
+            transform: scale(0.97);
+        }
+
+        .btn-pdf svg {
+            width: 17px;
+            height: 17px;
+            fill: currentColor;
+        }
+
+        /* ─── PLANNER VIEWPORT ─── */
+        .planner-viewport {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow: hidden;
+        }
+
+        /* ─── PLANNER – STRICTLY ONE PAGE ─── */
+        .planner {
+            width: 210mm;
+            height: 296mm;
+            max-height: 296mm;
+            background: var(--bg-page);
+            padding: 10mm 12mm 8mm 12mm;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-radius: 4px;
+            overflow: hidden;
+            transform-origin: top center;
+        }
+
+        .planner.rendering-pdf {
+            box-shadow: none !important;
+            border-radius: 0 !important;
+        }
+
+        /* ─── HEADER ─── */
+        .header {
+            text-align: center;
+            border-bottom: 2px solid var(--text-main);
+            padding-bottom: 4px;
+            margin-bottom: 4px;
+            flex-shrink: 0;
+        }
+
+        .header-title {
+            font-family: var(--font-serif);
+            font-size: 20pt;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--text-main);
+        }
+
+        .header-meta {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 9pt;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-top: 2px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .dotted-line-inline {
+            display: inline-block;
+            border-bottom: 1px dotted var(--line-dotted);
+            width: 70px;
+            height: 1em;
+        }
+
+        /* ─── REUSABLE ─── */
+        .section-title {
+            font-family: var(--font-serif);
+            font-size: 11pt;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-top: 2px;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 1px;
+        }
+
+        .dotted-row {
+            border-bottom: 1px dotted var(--line-dotted);
+            height: 14px;
+            width: 100%;
+            margin: 1px 0;
+        }
+
+        .field-row {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            font-size: 9pt;
+            margin: 1px 0;
+        }
+
+        .field-row .label {
+            font-weight: 600;
+            color: var(--text-muted);
+            flex-shrink: 0;
+            font-size: 9pt;
+        }
+
+        .field-row .dotted-row {
+            flex: 1;
+            height: 13px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        /* ─── GRATITUDE / INTENTIONS / TODO ─── */
+        .list-block .dotted-row {
+            height: 13px;
+            margin: 1px 0;
+        }
+
+        /* ─── ACTION PLAN ─── */
+        .goal-block {
+            margin-top: 2px;
+        }
+
+        .goal-block .goal-title {
+            font-weight: 600;
+            font-size: 9pt;
+            color: var(--text-main);
+            margin-bottom: 0px;
+        }
+
+        .goal-block .dotted-row {
+            height: 12px;
+            margin: 0px 0;
+        }
+
+        .goal-block .field-row {
+            margin: 0px 0;
+        }
+
+        .goal-block .field-row .dotted-row {
+            height: 12px;
+        }
+
+        /* ─── SELF-CARE CHECK ─── */
+        .check-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px 12px;
+            font-size: 9pt;
+            margin: 2px 0;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .sq-box {
+            width: 12px;
+            height: 12px;
+            border: 1.2px solid #786c62;
+            border-radius: 2px;
+            background-color: #fff;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.15s ease;
+        }
+
+        .sq-box:hover {
+            background-color: #f0ebe4;
+        }
+
+        .sq-box.checked::after {
+            content: '✓';
+            font-size: 8px;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1;
+        }
+
+        .check-item .dotted-row {
+            flex: 1;
+            height: 12px;
+            margin: 0;
+        }
+
+        /* ─── AFFIRMATION ─── */
+        .affirmation-block {
+            background-color: var(--accent-soft);
+            border-radius: 4px;
+            padding: 4px 10px;
+            margin: 2px 0;
+            text-align: center;
+            font-family: var(--font-serif);
+            font-size: 10.5pt;
+            font-style: italic;
+        }
+
+        .affirmation-block .dotted-row {
+            display: inline-block;
+            width: 160px;
+            height: 13px;
+            margin: 0 4px;
+        }
+
+        /* ─── REFLECTION ─── */
+        .reflection-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 12px;
+        }
+
+        .reflection-item .label {
+            font-weight: 600;
+            font-size: 8.5pt;
+            color: var(--text-muted);
+        }
+
+        .reflection-item .dotted-row {
+            height: 13px;
+        }
+
+        /* ─── SMALL WINS ─── */
+        .wins-block .dotted-row {
+            height: 13px;
+            margin: 1px 0;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 8.5pt;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        /* ─── PRINT OVERRIDES – STRICT ONE PAGE ─── */
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+
+        @media print {
+            html,
+            body {
+                height: 100%;
+                overflow: hidden !important;
+                background: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .download-bar {
+                display: none !important;
+            }
+
+            .planner-viewport {
+                overflow: visible;
+            }
+
+            .planner {
+                box-shadow: none;
+                width: 210mm;
+                height: 296mm;
+                max-height: 296mm;
+                transform: scale(1) !important;
+                margin: 0;
+                padding: 10mm 12mm 8mm 12mm;
+                border-radius: 0;
+                page-break-before: avoid;
+                page-break-after: avoid;
+                page-break-inside: avoid;
+                break-inside: avoid;
+                overflow: hidden !important;
+            }
+
+            .sq-box {
+                background-color: #fff !important;
+            }
+
+            .sq-box.checked::after {
+                content: '✓';
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- DOWNLOAD BUTTON -->
+    <div class="download-bar">
+        <button class="btn-pdf" id="downloadPdfBtn">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/><path d="M8 12l2 2 4-4 1 1-4 4-2-2 1-1z"/></svg>
+            DOWNLOAD PDF
+        </button>
+    </div>
+
+    <!-- VIEWPORT WRAPPER -->
+    <div class="planner-viewport">
+        <!-- ─── PLANNER ─── -->
+        <div class="planner" id="plannerContent">
+
+            <!-- HEADER -->
+            <header class="header">
+                <h1 class="header-title">Self-Care Journal</h1>
+                <div class="header-meta">
+                    <span class="meta-item">Date: <span class="dotted-line-inline"></span></span>
+                    <span class="meta-item">Mood (1–10): <span class="dotted-line-inline" style="width:45px;"></span></span>
+                    <span class="meta-item">Energy Level: <span class="dotted-line-inline" style="width:45px;"></span></span>
+                </div>
+            </header>
+
+            <!-- HOW I FEEL TODAY -->
+            <div>
+                <div class="section-title">How I Feel Today</div>
+                <div class="field-row"><span class="label">Emotion(s):</span><span class="dotted-row"></span></div>
+                <div class="field-row"><span class="label">What's influencing this mood:</span><span class="dotted-row"></span></div>
+            </div>
+
+            <!-- GRATITUDE -->
+            <div>
+                <div class="section-title">Gratitude</div>
+                <div class="list-block">
+                    <div class="dotted-row"></div>
+                    <div class="dotted-row"></div>
+                    <div class="dotted-row"></div>
+                    <div class="dotted-row"></div>
+                </div>
+            </div>
+
+            <!-- TODAY'S INTENTIONS -->
+            <div>
+                <div class="section-title">Today's Intentions</div>
+                <div class="list-block">
+                    <div class="field-row"><span class="label">How do I want to show up today?</span></div>
+                    <div class="dotted-row"></div>
+                    <div class="dotted-row"></div>
+                    <div class="dotted-row"></div>
+                </div>
+            </div>
+
+            <!-- TO-DO LIST -->
+            <div>
+                <div class="section-title">To-Do List (Top Priorities)</div>
+                <div class="list-block">
+                    <div class="dotted-row"></div>
+                    <div class="dotted-row"></div>
+                    <div class="dotted-row"></div>
+                    <div class="dotted-row"></div>
+                </div>
+            </div>
+
+            <!-- ACTION PLAN -->
+            <div>
+                <div class="section-title">Action Plan to Achieve My Goals</div>
+
+                <div class="goal-block">
+                    <div class="goal-title">Goal 1: <span class="dotted-row" style="display:inline-block; width:160px; height:12px;"></span></div>
+                    <div class="field-row"><span class="label">Step 1:</span><span class="dotted-row"></span></div>
+                    <div class="field-row"><span class="label">Step 2:</span><span class="dotted-row"></span></div>
+                    <div class="field-row"><span class="label">Step 3:</span><span class="dotted-row"></span></div>
+                </div>
+
+                <div class="goal-block" style="margin-top:1px;">
+                    <div class="goal-title">Goal 2: <span class="dotted-row" style="display:inline-block; width:160px; height:12px;"></span></div>
+                    <div class="field-row"><span class="label">Step 1:</span><span class="dotted-row"></span></div>
+                    <div class="field-row"><span class="label">Step 2:</span><span class="dotted-row"></span></div>
+                    <div class="field-row"><span class="label">Step 3:</span><span class="dotted-row"></span></div>
+                </div>
+            </div>
+
+            <!-- SELF-CARE CHECK -->
+            <div>
+                <div class="section-title">Self-Care Check</div>
+                <div class="check-grid">
+                    <div class="check-item"><span class="sq-box"></span> Drinking enough water</div>
+                    <div class="check-item"><span class="sq-box"></span> Moving my body</div>
+                    <div class="check-item"><span class="sq-box"></span> Taking breaks</div>
+                    <div class="check-item"><span class="sq-box"></span> Eating nourishing food</div>
+                    <div class="check-item"><span class="sq-box"></span> Getting enough rest</div>
+                    <div class="check-item">
+                        <span class="sq-box"></span> Add your own:
+                        <span class="dotted-row" style="flex:1; height:12px;"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AFFIRMATION -->
+            <div>
+                <div class="section-title">Affirmation of the Day</div>
+                <div class="affirmation-block">
+                    “I am
+                    <span class="dotted-row" style="display:inline-block; width:160px; height:13px;"></span>
+                    ”
+                </div>
+            </div>
+
+            <!-- REFLECTION -->
+            <div>
+                <div class="section-title">Reflection (End of Day)</div>
+                <div class="reflection-grid">
+                    <div class="reflection-item">
+                        <div class="label">What went well today:</div>
+                        <div class="dotted-row"></div>
+                    </div>
+                    <div class="reflection-item">
+                        <div class="label">What I learned:</div>
+                        <div class="dotted-row"></div>
+                    </div>
+                    <div class="reflection-item">
+                        <div class="label">One thing I can improve tomorrow:</div>
+                        <div class="dotted-row"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SMALL WINS -->
+            <div>
+                <div class="section-title">Small Wins (Celebrate Progress!)</div>
+                <div class="wins-block">
+                    <div class="dotted-row"></div>
+                    <div class="dotted-row"></div>
+                    <div class="dotted-row"></div>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="footer-note">
+                Small steps every day lead to big changes. ❤️
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── JAVASCRIPT ─── -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const planner = document.getElementById('plannerContent');
+            const viewport = document.querySelector('.planner-viewport');
+
+            // Toggle checkboxes
+            document.querySelectorAll('.sq-box').forEach(box => {
+                box.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    this.classList.toggle('checked');
+                });
+            });
+
+            // PDF DOWNLOAD LOGIC
+            const btn = document.getElementById('downloadPdfBtn');
+
+            btn.addEventListener('click', function() {
+                const originalText = this.innerHTML;
+                this.innerHTML = '⏳ GENERATING...';
+                this.disabled = true;
+
+                const currentTransform = planner.style.transform;
+                planner.style.transform = 'scale(1)';
+                planner.classList.add('rendering-pdf');
+
+                const opt = {
+                    margin: 0,
+                    filename: 'self_care_journal_A4.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: {
+                        scale: 2,
+                        useCORS: true,
+                        logging: false,
+                        letterRendering: true,
+                        scrollY: 0,
+                        scrollX: 0
+                    },
+                    jsPDF: {
+                        unit: 'mm',
+                        format: 'a4',
+                        orientation: 'portrait'
+                    },
+                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                };
+
+                html2pdf()
+                    .set(opt)
+                    .from(planner)
+                    .save()
+                    .then(() => {
+                        planner.style.transform = currentTransform;
+                        planner.classList.remove('rendering-pdf');
+                        this.innerHTML = originalText;
+                        this.disabled = false;
+                    })
+                    .catch(err => {
+                        console.error('PDF export error:', err);
+                        alert('PDF generation failed. Please try again or use Print (Ctrl+P).');
+                        planner.style.transform = currentTransform;
+                        planner.classList.remove('rendering-pdf');
+                        this.innerHTML = originalText;
+                        this.disabled = false;
+                    });
+            });
+        });
+    </script>
+
+</body>
+</html>

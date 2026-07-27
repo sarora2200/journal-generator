@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400..600;1,14..32,400..600&display=swap" rel="stylesheet">
+  
+  <!-- html2pdf.js Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f2f4f8;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      padding: 16px;
+      color: #1a2634;
+    }
+
+    /* --- download bar --- */
+    .download-bar {
+      width: 100%;
+      max-width: 1000px;
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 12px;
+    }
+
+    .btn-pdf {
+      background: #0b1a2f;
+      border: none;
+      color: #ffffff;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 100px;
+      box-shadow: 0 4px 12px rgba(11, 26, 47, 0.15);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-pdf:hover {
+      background: #1f3349;
+      transform: translateY(-1px);
+    }
+
+    .btn-pdf svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    /* Planner wrapper forced to standard portrait aspect ratio container */
+    .planner {
+      width: 100%;
+      max-width: 900px;
+      background: #ffffff;
+      padding: 18px 20px;
+      border-radius: 16px;
+      box-shadow: 0 12px 30px -10px rgba(0, 20, 30, 0.12);
+      transition: box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .planner.rendering-pdf {
+      box-shadow: none !important;
+      border-radius: 0 !important;
+      width: 210mm !important;
+      height: 287mm !important;
+      padding: 10mm !important;
+    }
+
+    /* --- header --- */
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .planner-title {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: #0b1a2f;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .date-picker {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f6f8fc;
+      padding: 4px 12px;
+      border-radius: 100px;
+      border: 1px solid #e4e9f2;
+    }
+
+    .date-picker span {
+      font-weight: 500;
+      color: #1d3146;
+      font-size: 13px;
+    }
+
+    .date-picker input {
+      border: none;
+      background: transparent;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 2px;
+      width: 110px;
+      color: #0b1a2f;
+      border-bottom: 1.5px dashed #b6c6db;
+    }
+
+    .date-picker input:focus {
+      outline: none;
+      border-bottom-color: #2a5cff;
+    }
+
+    .day-selector {
+      display: flex;
+      gap: 4px;
+    }
+
+    .day-selector span {
+      width: 26px;
+      height: 26px;
+      line-height: 26px;
+      text-align: center;
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: 500;
+      background: #eef2f8;
+      color: #1f3349;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+
+    .day-selector span.active {
+      background: #0b1a2f;
+      color: #ffffff;
+    }
+
+    /* --- grid --- */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1.05fr 1fr;
+      gap: 10px;
+    }
+
+    /* --- cards --- */
+    .card {
+      background: #fafcff;
+      border-radius: 10px;
+      padding: 8px 10px 10px;
+      border: 1px solid #e6ecf5;
+      margin-bottom: 8px;
+    }
+
+    .card:last-child {
+      margin-bottom: 0;
+    }
+
+    .card h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #142433;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-bottom: 1px solid #e2e9f3;
+      padding-bottom: 4px;
+      margin-bottom: 6px;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 2px 0;
+      font-size: 13px;
+      color: #1a2a3e;
+    }
+
+    .check-item input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: #0b1a2f;
+      border-radius: 3px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .check-item label {
+      flex: 1;
+      line-height: 1.2;
+      cursor: pointer;
+    }
+
+    .mood-selector {
+      display: flex;
+      justify-content: space-around;
+      padding: 2px 0;
+    }
+
+    .mood-emoji {
+      font-size: 22px;
+      line-height: 1;
+      opacity: 0.4;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+      user-select: none;
+    }
+
+    .mood-emoji:hover {
+      opacity: 0.8;
+    }
+
+    .mood-emoji.active {
+      opacity: 1;
+      transform: scale(1.15);
+    }
+
+    /* time blocks */
+    .time-list {
+      list-style: none;
+      font-size: 12px;
+    }
+
+    .time-list li {
+      display: flex;
+      align-items: center;
+      padding: 2px 0;
+      border-bottom: 1px dashed #e3eaf3;
+    }
+
+    .time-list li:last-child {
+      border-bottom: none;
+    }
+
+    .time-label {
+      width: 46px;
+      font-weight: 600;
+      color: #1f3a5f;
+    }
+
+    .time-task {
+      flex: 1;
+    }
+
+    .time-task input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      padding: 1px 4px;
+      color: #142433;
+    }
+
+    .time-task input:focus {
+      outline: none;
+      background: #f0f4fa;
+      border-radius: 4px;
+    }
+
+    .appt-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      padding: 3px 0;
+      border-bottom: 1px solid #eef3fa;
+    }
+
+    .appt-item:last-child {
+      border-bottom: none;
+    }
+
+    .appt-time {
+      font-weight: 600;
+      color: #1f3a5f;
+      min-width: 44px;
+    }
+
+    .appt-desc {
+      flex: 1;
+    }
+
+    .appt-desc input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      padding: 1px 4px;
+    }
+
+    .appt-desc input:focus {
+      outline: none;
+      background: #f0f4fa;
+      border-radius: 4px;
+    }
+
+    .meal-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 4px;
+      font-size: 12px;
+    }
+
+    .meal-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .meal-item label {
+      min-width: 65px;
+      font-weight: 500;
+      color: #1f3a5f;
+      font-size: 12px;
+    }
+
+    .meal-item input {
+      border: none;
+      border-bottom: 1px dashed #c4d3e8;
+      background: transparent;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      padding: 1px 4px;
+      flex: 1;
+    }
+
+    .meal-item input:focus {
+      outline: none;
+      border-bottom-color: #2a5cff;
+    }
+
+    .habit-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 8px;
+      font-size: 12px;
+    }
+
+    .habit-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .habit-item input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: #0b1a2f;
+      cursor: pointer;
+    }
+
+    .habit-item label {
+      cursor: pointer;
+    }
+
+    /* Interactive Water Glasses */
+    .water-track {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2px 0;
+    }
+
+    .water-glasses {
+      display: flex;
+      gap: 4px;
+    }
+
+    .water-drop {
+      font-size: 18px;
+      cursor: pointer;
+      opacity: 0.3;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      user-select: none;
+    }
+
+    .water-drop.active {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
+    .water-count {
+      font-size: 12px;
+      font-weight: 600;
+      color: #1f3a5f;
+    }
+
+    .reflection-area, .notes-area {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .reflection-area textarea,
+    .notes-area textarea {
+      width: 100%;
+      border: 1px solid #e2e9f3;
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      resize: none;
+      background: white;
+      color: #1a2634;
+    }
+
+    .reflection-area textarea:focus,
+    .notes-area textarea:focus {
+      outline: none;
+      border-color: #b6c6db;
+    }
+
+    .reflection-area textarea {
+      height: 48px;
+    }
+
+    .notes-area textarea {
+      height: 128px;
+    }
+
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    /* --- Page & Print Settings for 1 Single Page --- */
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
+    @media print {
+      html, body {
+        height: 100%;
+        overflow: hidden;
+        background: white;
+        padding: 0;
+        margin: 0;
+      }
+      
+      .download-bar {
+        display: none !important;
+      }
+
+      .planner {
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: none !important;
+        padding: 8mm 10mm !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        background: white !important;
+        justify-content: space-between;
+      }
+
+      .card {
+        background: #fafcff;
+        border-color: #d2dceb;
+        break-inside: avoid;
+      }
+
+      input, textarea {
+        border-color: #c8d6e8 !important;
+        background: transparent !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- DOWNLOAD BAR -->
+  <div class="download-bar">
+    <button class="btn-pdf" id="downloadPdfBtn">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/><path d="M8 12l2 2 4-4 1 1-4 4-2-2 1-1z"/></svg>
+      DOWNLOAD PDF
+    </button>
+  </div>
+
+<div class="planner" id="plannerContent">
+
+  <!-- Header Section -->
+  <div class="header-row">
+    <div class="planner-title">
+      <span>📋 Daily Planner</span>
+    </div>
+    <div class="date-picker">
+      <span>📅 Date</span>
+      <input type="text" placeholder="" value="">
+      <div class="day-selector">
+        <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main 3-Column Layout -->
+  <div class="grid-3">
+
+    <!-- Column 1: Morning, Mood, To-Do, Priorities -->
+    <div>
+      <div class="card">
+        <h3>🌅 Morning Routine</h3>
+        <div class="check-item"><input type="checkbox" id="wake"><label for="wake">Wake up</label></div>
+        <div class="check-item"><input type="checkbox" id="stretch"><label for="stretch">Stretch / move</label></div>
+        <div class="check-item"><input type="checkbox" id="meditate"><label for="meditate">Meditate</label></div>
+        <div class="check-item"><input type="checkbox" id="hydrate"><label for="hydrate">Hydrate</label></div>
+        <div class="check-item"><input type="checkbox" id="read"><label for="read">Read</label></div>
+        <div class="check-item"><input type="checkbox" id="breakfast"><label for="breakfast">Breakfast</label></div>
+      </div>
+
+      <div class="card">
+        <h3>😊 Daily Mood</h3>
+        <div class="mood-selector">
+          <span class="mood-emoji">😄</span>
+          <span class="mood-emoji">🙂</span>
+          <span class="mood-emoji">😐</span>
+          <span class="mood-emoji">😔</span>
+          <span class="mood-emoji">😴</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>✅ To‑Do List</h3>
+        <div class="check-item"><input type="checkbox"><label><input type="text" style="width:100%; border:none; border-bottom:1px dashed #d2dceb; background:transparent;" placeholder=""></label></div>
+        <div class="check-item"><input type="checkbox"><label><input type="text" style="width:100%; border:none; border-bottom:1px dashed #d2dceb; background:transparent;" placeholder=""></label></div>
+        <div class="check-item"><input type="checkbox"><label><input type="text" style="width:100%; border:none; border-bottom:1px dashed #d2dceb; background:transparent;" placeholder=""></label></div>
+        <div class="check-item"><input type="checkbox"><label><input type="text" style="width:100%; border:none; border-bottom:1px dashed #d2dceb; background:transparent;" placeholder=""></label></div>
+        <div class="check-item"><input type="checkbox"><label><input type="text" style="width:100%; border:none; border-bottom:1px dashed #d2dceb; background:transparent;" placeholder=""></label></div>
+      </div>
+
+      <div class="card">
+        <h3>⭐ Top Priorities</h3>
+        <div class="check-item"><input type="checkbox"><label><input type="text" style="width:100%; border:none; border-bottom:1px dashed #d2dceb; background:transparent;" placeholder=""></label></div>
+        <div class="check-item"><input type="checkbox"><label><input type="text" style="width:100%; border:none; border-bottom:1px dashed #d2dceb; background:transparent;" placeholder=""></label></div>
+        <div class="check-item"><input type="checkbox"><label><input type="text" style="width:100%; border:none; border-bottom:1px dashed #d2dceb; background:transparent;" placeholder=""></label></div>
+      </div>
+    </div>
+
+    <!-- Column 2: Time Schedule & Focus Blocks -->
+    <div>
+      <div class="card">
+        <h3>⏰ Time Schedule</h3>
+        <ul class="time-list">
+          <li><span class="time-label">06 AM</span><span class="time-task"><input type="text"></span></li>
+          <li><span class="time-label">07 AM</span><span class="time-task"><input type="text"></span></li>
+          <li><span class="time-label">08 AM</span><span class="time-task"><input type="text"></span></li>
+          <li><span class="time-label">09 AM</span><span class="time-task"><input type="text"></span></li>
+          <li><span class="time-label">10 AM</span><span class="time-task"><input type="text"></span></li>
+          <li><span class="time-label">11 AM</span><span class="time-task"><input type="text"></span></li>
+          <li><span class="time-label">12 PM</span><span class="time-task"><input type="text"></span></li>
+          <li><span class="time-label">01 PM</span><span class="time-task"><input type="text"></span></li>
+          <li><span class="time-label">02 PM</span><span class="time-task"><input type="text"></span></li>
+          <li><span class="time-label">04 PM</span><span class="time-task"><input type="text"></span></li>
+          <li><span class="time-label">05 PM</span><span class="time-task"><input type="text"></span></li>
+          <li><span class="time-label">06 PM</span><span class="time-task"><input type="text"></span></li>
+          <li><span class="time-label">08 PM</span><span class="time-task"><input type="text"></span></li>
+          <li><span class="time-label">09 PM</span><span class="time-task"><input type="text"></span></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>⚡ Focus Blocks</h3>
+        <div class="check-item"><input type="checkbox"><label><input type="text" style="width:100%; border:none; border-bottom:1px dashed #d2dceb; background:transparent;" placeholder=""></label></div>
+        <div class="check-item"><input type="checkbox"><label><input type="text" style="width:100%; border:none; border-bottom:1px dashed #d2dceb; background:transparent;" placeholder=""></label></div>
+        <div class="check-item"><input type="checkbox"><label><input type="text" style="width:100%; border:none; border-bottom:1px dashed #d2dceb; background:transparent;" placeholder=""></label></div>
+      </div>
+    </div>
+
+    <!-- Column 3: Appointments, Meals, Lifestyle & Water -->
+    <div>
+      <div class="card">
+        <h3>📅 Appointments & Events</h3>
+        <div class="appt-item"><span class="appt-time">06 AM</span><span class="appt-desc"><input type="text"></span></div>
+        <div class="appt-item"><span class="appt-time">01 PM</span><span class="appt-desc"><input type="text"></span></div>
+        <div class="appt-item"><span class="appt-time">02 PM</span><span class="appt-desc"><input type="text"></span></div>
+        <div class="appt-item"><span class="appt-time">06 PM</span><span class="appt-desc"><input type="text"></span></div>
+        <div class="appt-item"><span class="appt-time">08 PM</span><span class="appt-desc"><input type="text"></span></div>
+      </div>
+
+      <div class="card">
+        <h3>🍽️ Meal Plan</h3>
+        <div class="meal-grid">
+          <div class="meal-item"><label>Breakfast</label><input type="text"></div>
+          <div class="meal-item"><label>Lunch</label><input type="text"></div>
+          <div class="meal-item"><label>Dinner</label><input type="text"></div>
+          <div class="meal-item"><label>Snacks</label><input type="text"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>🧘 Lifestyle & Habits</h3>
+        <div class="habit-grid">
+          <div class="habit-item"><input type="checkbox" id="ex"><label for="ex">Exercise</label></div>
+          <div class="habit-item"><input type="checkbox" id="med"><label for="med">Meditate</label></div>
+          <div class="habit-item"><input type="checkbox" id="rd"><label for="rd">Reading</label></div>
+          <div class="habit-item"><input type="checkbox" id="rst"><label for="rst">Rest</label></div>
+          <div class="habit-item"><input type="checkbox" id="jrn"><label for="jrn">Journal</label></div>
+          <div class="habit-item"><input type="checkbox" id="grt"><label for="grt">Gratitude</label></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>💧 Water Intake</h3>
+        <div class="water-track">
+          <div class="water-glasses" id="waterGlasses">
+            <span class="water-drop" data-index="1">💧</span>
+            <span class="water-drop" data-index="2">💧</span>
+            <span class="water-drop" data-index="3">💧</span>
+            <span class="water-drop" data-index="4">💧</span>
+            <span class="water-drop" data-index="5">💧</span>
+            <span class="water-drop" data-index="6">💧</span>
+            <span class="water-drop" data-index="7">💧</span>
+            <span class="water-drop" data-index="8">💧</span>
+          </div>
+          <span class="water-count" id="waterCount">0 / 8</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Grid: Reflection & Notes -->
+  <div class="bottom-grid">
+    <div class="card reflection-area">
+      <h3>🌙 Evening Reflection</h3>
+      <div style="margin-bottom: 2px; font-weight:500; font-size:12px; color:#1f3a5f;">What went well</div>
+      <textarea placeholder="Write your highlights..."></textarea>
+      <div style="margin: 4px 0 2px; font-weight:500; font-size:12px; color:#1f3a5f;">Grateful for</div>
+      <textarea placeholder="I am grateful for..."></textarea>
+    </div>
+    <div class="card notes-area">
+      <h3>📝 Notes & Ideas</h3>
+      <textarea placeholder="Free notes, ideas, or tomorrow's focus..."></textarea>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  (function() {
+    // Mood tracker selector
+    document.querySelectorAll('.mood-selector').forEach(container => {
+      const emojis = container.querySelectorAll('.mood-emoji');
+      emojis.forEach(emoji => {
+        emoji.addEventListener('click', function() {
+          emojis.forEach(e => e.classList.remove('active'));
+          this.classList.add('active');
+        });
+      });
+    });
+
+    // Day of the week selector
+    const daySpans = document.querySelectorAll('.day-selector span');
+    if (daySpans.length) {
+      daySpans.forEach(span => {
+        span.addEventListener('click', function() {
+          daySpans.forEach(s => s.classList.remove('active'));
+          this.classList.add('active');
+        });
+      });
+      daySpans[0].classList.add('active'); // Default active day
+    }
+
+    // Water intake tracker interactive toggle
+    const drops = document.querySelectorAll('.water-drop');
+    const countDisplay = document.getElementById('waterCount');
+
+    drops.forEach((drop, idx) => {
+      drop.addEventListener('click', () => {
+        const targetIndex = idx + 1;
+        
+        let activeCount = 0;
+        drops.forEach(d => { if (d.classList.contains('active')) activeCount++; });
+        
+        const newCount = (targetIndex === activeCount) ? targetIndex - 1 : targetIndex;
+
+        drops.forEach((d, i) => {
+          if (i < newCount) {
+            d.classList.add('active');
+          } else {
+            d.classList.remove('active');
+          }
+        });
+
+        if (countDisplay) {
+          countDisplay.textContent = `${newCount} / 8`;
+        }
+      });
+    });
+
+    // PDF Download functionality (forces single-page A4 dimension during render)
+    const btn = document.getElementById('downloadPdfBtn');
+    const planner = document.getElementById('plannerContent');
+
+    if (btn && planner) {
+      btn.addEventListener('click', function() {
+        const originalText = this.innerHTML;
+        this.innerHTML = '⏳ GENERATING...';
+        this.disabled = true;
+
+        planner.classList.add('rendering-pdf');
+
+        const opt = {
+          margin: 0,
+          filename: 'daily_planner.pdf',
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            scrollY: 0,
+            scrollX: 0
+          },
+          jsPDF: {
+            unit: 'mm',
+            format: 'a4',
+            orientation: 'portrait'
+          }
+        };
+
+        html2pdf()
+          .set(opt)
+          .from(planner)
+          .save()
+          .then(() => {
+            planner.classList.remove('rendering-pdf');
+            this.innerHTML = originalText;
+            this.disabled = false;
+          })
+          .catch(err => {
+            console.error('PDF export error:', err);
+            alert('PDF generation failed. Please try again.');
+            planner.classList.remove('rendering-pdf');
+            this.innerHTML = originalText;
+            this.disabled = false;
+          });
+      });
+    }
+  })();
+</script>
+</body>
+</html>
