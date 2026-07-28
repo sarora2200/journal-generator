@@ -135,14 +135,14 @@
       width: 100%;
       max-width: 820px;
       margin: 0 auto 32px;
-      padding: 28px 32px; /* Reduced outer page padding for more writing area */
+      padding: 24px 28px;
       background: white;
       border-radius: 12px;
       border: 2px solid #2d2d2d;
       box-shadow: 0 2px 12px rgba(0,0,0,0.04);
       page-break-after: always;
       position: relative;
-      min-height: 750px;
+      min-height: 800px;
       color: #1a1a1a;
       font-family: 'Source Serif 4', 'Georgia', serif;
       font-size: 11pt;
@@ -255,7 +255,7 @@
       text-align: center;
       letter-spacing: 2px;
       color: #111;
-      margin-bottom: 6px;
+      margin-bottom: 2px;
     }
     .vision-board-page .bingo-subtitle {
       text-align: center;
@@ -263,7 +263,7 @@
       font-weight: 600;
       font-size: 0.85rem;
       opacity: 0.7;
-      margin-bottom: 50px;
+      margin-bottom: 12px;
       letter-spacing: 3px;
       text-transform: uppercase;
     }
@@ -276,7 +276,7 @@
     .vision-board-page .bingo-cell {
       border: 2px solid #1e1a16;
       border-radius: 8px;
-      padding: 20px 4px;
+      padding: 10px 4px;
       text-align: center;
       font-family: 'Inter', sans-serif;
       font-weight: 700;
@@ -336,7 +336,7 @@
       border-bottom: 1px dashed #ddd;
     }
 
-    /* WEEKLY PLANNER STYLES */
+    /* ——— EXPANDED WEEKLY PLANNER STYLES ——— */
     .weekly-planner-page {
       background: #ffffff;
       border-color: #1e1a16;
@@ -352,16 +352,16 @@
     .weekly-planner-page .wp-header .wp-title {
       font-family: 'Playfair Display', serif;
       font-weight: 700;
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       color: #111;
     }
     .weekly-planner-page .wp-header .wp-badge {
       font-family: 'Inter', sans-serif;
       font-weight: 800;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       background: #1e1a16;
       color: white;
-      padding: 3px 10px;
+      padding: 4px 12px;
       border-radius: 20px;
       letter-spacing: 0.5px;
     }
@@ -385,19 +385,16 @@
       letter-spacing: 1px;
       margin-bottom: 6px;
       color: #111;
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
     .weekly-planner-page .wp-priority-item {
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
     }
     .weekly-planner-page .wp-priority-item .checkbox {
-      width: 13px;
-      height: 13px;
+      width: 12px;
+      height: 12px;
       border: 2px solid #1e1a16;
       border-radius: 3px;
       flex-shrink: 0;
@@ -405,21 +402,26 @@
     .weekly-planner-page .wp-priority-item .line {
       flex: 1;
       border-bottom: 1.5px dashed #aaa;
-      height: 18px;
+      height: 16px;
     }
-    .weekly-planner-page .wp-day-grid {
+
+    /* 2-Column Wide Day Grid Layout for Maximum Writing Area */
+    .weekly-planner-page .wp-day-grid-2col {
       display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 5px;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
       margin-bottom: 12px;
     }
     .weekly-planner-page .wp-day-card {
       border: 2px solid #1e1a16;
       border-radius: 8px;
       background: #ffffff;
-      min-height: 270px; /* Increased height for longer daily task lists */
+      min-height: 160px;
       display: flex;
       flex-direction: column;
+    }
+    .weekly-planner-page .wp-day-card.full-width {
+      grid-column: span 2;
     }
     .weekly-planner-page .wp-day-card.weekend {
       background: #faf8f6;
@@ -429,38 +431,41 @@
       color: white;
       font-family: 'Inter', sans-serif;
       font-weight: 800;
-      font-size: 0.65rem;
-      text-align: center;
-      padding: 4px 2px;
+      font-size: 0.75rem;
+      padding: 5px 10px;
       text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      justify-content: space-between;
     }
     .weekly-planner-page .wp-day-card.weekend .wp-day-header {
       background: #4a423a;
     }
     .weekly-planner-page .wp-day-body {
-      padding: 6px 3px;
+      padding: 8px 10px;
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
     .weekly-planner-page .wp-day-task {
       display: flex;
       align-items: center;
-      gap: 3px;
+      gap: 8px;
     }
     .weekly-planner-page .wp-day-task .mini-check {
-      width: 9px;
-      height: 9px;
+      width: 12px;
+      height: 12px;
       border: 1.5px solid #1e1a16;
-      border-radius: 2px;
+      border-radius: 3px;
       flex-shrink: 0;
     }
     .weekly-planner-page .wp-day-task .task-line {
       flex: 1;
-      border-bottom: 1px dashed #ccc;
-      height: 16px;
+      border-bottom: 1.5px dashed #bbb;
+      height: 24px; /* Taller writing line */
     }
+
     .weekly-planner-page .wp-bottom-grid {
       display: grid;
       grid-template-columns: 2fr 1fr;
@@ -473,16 +478,16 @@
       padding: 3px 0;
       border-bottom: 1px dashed #ddd;
       font-family: 'Inter', sans-serif;
-      font-size: 0.72rem;
+      font-size: 0.75rem;
       font-weight: 600;
     }
     .weekly-planner-page .wp-habit-dots {
       display: flex;
-      gap: 4px;
+      gap: 5px;
     }
     .weekly-planner-page .wp-habit-dot {
-      width: 11px;
-      height: 11px;
+      width: 12px;
+      height: 12px;
       border: 1.5px solid #1e1a16;
       border-radius: 50%;
     }
@@ -537,13 +542,8 @@
       .combined-planner-page .planner-grid-2col { grid-template-columns: 1fr; }
       .vision-board-page .bingo-grid { grid-template-columns: repeat(3, 1fr); }
       .weekly-planner-page .wp-top-grid, .weekly-planner-page .wp-bottom-grid { grid-template-columns: 1fr; }
-      .weekly-planner-page .wp-day-grid { grid-template-columns: repeat(4, 1fr); }
-    }
-    @media (max-width: 480px) {
-      .year-calendar-page .calendar-grid { grid-template-columns: 1fr; }
-      .vision-board-page .bingo-grid { grid-template-columns: repeat(2, 1fr); }
-      .vision-board-page .bingo-cell { font-size: 0.7rem; padding: 6px 3px; min-height: 50px; }
-      .weekly-planner-page .wp-day-grid { grid-template-columns: repeat(2, 1fr); }
+      .weekly-planner-page .wp-day-grid-2col { grid-template-columns: 1fr; }
+      .weekly-planner-page .wp-day-card.full-width { grid-column: auto; }
     }
   </style>
 </head>
@@ -581,18 +581,10 @@
       { name: 'Polaroid', icon: '📷' }, { name: 'Elegant Floral', icon: '🌹' },
       { name: 'Minimalist', icon: '◼️' }, { name: 'Vintage', icon: '📜' }
     ],
-    monthlyThemes: {
-      January: ['Snow','Cozy','New Year'], February: ['Roses','Love','Chocolate'],
-      March: ['Frogs','Rainbow','Spring'], April: ['Tulips','Butterflies','Rain'],
-      May: ['Garden','Picnic','Flowers'], June: ['Sunshine','Beach','Art'],
-      July: ['Travel','Fireworks','Camping'], August: ['Sea','Sunflowers','Sailing'],
-      September: ['Leaves','Harvest','School'], October: ['Pumpkin','Spooky','Autumn'],
-      November: ['Sweater','Thankful','Forest'], December: ['Snowmen','Gifts','Holiday']
-    },
     journalPrompts: ['What made you smile?','What are you grateful for?','Goal for this week?','Happy memory?','Self‑care idea?','Letter to future self','What are you proud of?','Perfect day?','3 things you love','Challenge overcome?','Place to visit?','What does happiness mean?'],
     wellnessActivities: ['Meditate 5min','Walk in nature','Deep breathing','Journal','Stretch','Drink water','Gratitude','Read','Take a bath','Yoga','Healthy meal','8h sleep','Digital detox','Affirmations','Creative time'],
     budgetCategories: ['Housing','Utilities','Groceries','Transport','Insurance','Healthcare','Entertainment','Dining','Shopping','Savings','Emergency','Charity'],
-    travelGoals: ['','','','','','','','']
+    travelGoals: ['Visit a national park','Go on a road trip','Explore a new city','Visit a museum','Go camping','Take a scenic train ride','Visit a lighthouse','Explore a castle','Go to a beach','Visit a waterfall']
   };
 
   let state = {
@@ -766,9 +758,9 @@
     const travelGoals = DATA.travelGoals;
     const budgetCats = DATA.budgetCategories.slice(0, 8);
 
-    const goalsHtml = goalCategories.map(c => `<div style="margin-bottom: 8px; font-size:0.85rem; border-bottom:1.5px dashed #ccc; padding-bottom: 8px;">${c}: </div>`).join('');
+    const goalsHtml = goalCategories.map(c => `<div style="margin-bottom: 8px; font-size:0.85rem; border-bottom:1.5px dashed #ccc; padding-bottom: 2px;">${c}: _____________________________________</div>`).join('');
     const travelHtml = travelGoals.map(d => `<div class="travel-item"><span>📍 ${d}</span><span>☐</span></div>`).join('');
-    const budgetHtml = budgetCats.map(c => `<div class="budget-item"><span>${c}</span><span>$------------</span></div>`).join('');
+    const budgetHtml = budgetCats.map(c => `<div class="budget-item"><span>${c}</span><span>$______</span></div>`).join('');
 
     return `<div class="journal-page combined-planner-page">
       <div class="section-title">🎯 ${year} Goals & Plans</div>
@@ -785,27 +777,26 @@
         <div><div class="section-title-sm">📍 Travel Bucket</div><div class="planner-box">${travelHtml}</div></div>
         <div><div class="section-title-sm">💰 Budget</div><div class="planner-box">${budgetHtml}</div></div>
       </div>
-      <div style="margin-top: 12px; padding: 10px; border: 2px solid #1e1a16; border-radius: 10px; background: #f2efec; text-align: center; font-family: 'Playfair Display', serif; font-style: italic; font-size: 1rem;">
-          "The best way to predict the future is to create it."
-        </div>
     </div>`;
   }
 
+  // UPDATED WEEKLY PLANNER WITH EXPANDED DAY SPACE
   function generateWeeklyPlannerPage(weekNumber, month, year, startDate, endDate) {
-    const dayNames = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+    const dayNames = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'wednesday', 'Thursday', 'Friday'];
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const weekRange = `${monthNames[month - 1]} ${startDate} – ${monthNames[month - 1]} ${endDate}`;
 
     let daysHtml = '';
     for (let i = 0; i < 7; i++) {
       const isWeekend = i >= 5;
+      const isFullWidth = i === 6; // Sunday takes full width at the bottom if desired, or wide 2-col layout
       daysHtml += `
-        <div class="wp-day-card ${isWeekend ? 'weekend' : ''}">
-          <div class="wp-day-header">${dayNames[i]}</div>
+        <div class="wp-day-card ${isWeekend ? 'weekend' : ''} ${isFullWidth ? 'full-width' : ''}">
+          <div class="wp-day-header">
+            <span>${dayNames[i]}</span>
+            <span>DAY ${i + 1}</span>
+          </div>
           <div class="wp-day-body">
-            <div class="wp-day-task"><div class="mini-check"></div><div class="task-line"></div></div>
-            <div class="wp-day-task"><div class="mini-check"></div><div class="task-line"></div></div>
-            <div class="wp-day-task"><div class="mini-check"></div><div class="task-line"></div></div>
             <div class="wp-day-task"><div class="mini-check"></div><div class="task-line"></div></div>
             <div class="wp-day-task"><div class="mini-check"></div><div class="task-line"></div></div>
             <div class="wp-day-task"><div class="mini-check"></div><div class="task-line"></div></div>
@@ -835,31 +826,29 @@
 
       <div class="wp-top-grid">
         <div class="wp-block">
-          <div class="wp-block-title">🎯 Main Objectives</div>
-          <div class="wp-priority-item"><div class="checkbox"></div><div class="line"></div></div>
+          <div class="wp-block-title">🎯 Top Priorities</div>
           <div class="wp-priority-item"><div class="checkbox"></div><div class="line"></div></div>
           <div class="wp-priority-item"><div class="checkbox"></div><div class="line"></div></div>
         </div>
         <div class="wp-block">
-          <div class="wp-block-title">📌 Key Reminders & Notes</div>
-          <div class="wp-priority-item"><div class="line" style="margin-left:0;"></div></div>
+          <div class="wp-block-title">📌 Key Reminders</div>
           <div class="wp-priority-item"><div class="line" style="margin-left:0;"></div></div>
           <div class="wp-priority-item"><div class="line" style="margin-left:0;"></div></div>
         </div>
       </div>
 
-      <div class="wp-day-grid">
+      <div class="wp-day-grid-2col">
         ${daysHtml}
       </div>
 
       <div class="wp-bottom-grid">
         <div class="wp-block">
-          <div class="wp-block-title">🌱 Weekly Habits & Routines</div>
+          <div class="wp-block-title">🌱 Weekly Habit Tracker</div>
           ${habitRows}
         </div>
         <div class="wp-block">
-          <div class="wp-block-title">✨ Weekly Win</div>
-          <div style="height: 60px; border-bottom: 1.5px dashed #aaa; margin-top: 10px;"></div>
+          <div class="wp-block-title">✨ Weekly Highlight</div>
+          <div style="height: 40px; border-bottom: 1.5px dashed #aaa; margin-top: 6px;"></div>
         </div>
       </div>
     </div>`;
@@ -949,65 +938,16 @@
     </div>`;
   }
 
-   // ============================================================
-  // YEAR REVIEW PAGE RENDERER
-  // ============================================================
   function generateYearReviewPage(year) {
-    const reviewItems = [
-      { label: "🏆 Biggest Achievement", icon: "🏆" },
-      { label: "📚 Most Important Lesson", icon: "📚" },
-      { label: "🙏 Most Grateful For", icon: "🙏" },
-      { label: "💪 Challenge Overcome", icon: "💪" },
-      { label: "🌟 Favorite Memory", icon: "🌟" },
-      { label: "🎯 Looking Forward To", icon: "🎯" },
-      { label: "❤️ Best Decision Made", icon: "❤️" },
-      { label: "🌱 Personal Growth", icon: "🌱" }
-    ];
-
-    const reviewHtml = reviewItems.map(item => `
-      <div class="review-item">
-        <span class="review-label">${item.label}</span>
-        <div class="review-line"></div>
+    return `<div class="journal-page year-review-page">
+      <div class="section-title">🌟 Year in Review ${year}</div>
+      <div class="review-grid">
+        <div class="review-item"><span class="review-label">🏆 Biggest Achievement</span><div class="review-line"></div><div class="review-line"></div><div class="review-line"></div></div>
+        <div class="review-item"><span class="review-label">📚 Lesson Learned</span><div class="review-line"></div><div class="review-line"></div><div class="review-line"></div></div>
+        <div class="review-item"><span class="review-label">🙏 Most Grateful For</span><div class="review-line"></div><div class="review-line"></div><div class="review-line"></div></div>
+        <div class="review-item"><span class="review-label">🌟 Favorite Memory</span><div class="review-line"></div><div class="review-line"></div><div class="review-line"></div></div>
       </div>
-    `).join('');
-
-    return `
-      <div class="journal-page year-review-page ${state.background === 'dots' ? 'dotted' : 'plain'}" style="border-color:#1a1a1a;">
-        <div class="section-title">🌟 Year in Review ${year}</div>
-        
-        <div style="padding: 16px; border: 2px solid #1e1a16; border-radius: 12px; background: #f2efec; text-align: center; margin-bottom: 20px; font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.2rem;">
-          "Looking back on an incredible year of growth, learning, and memorable moments."
-        </div>
-
-        <div class="review-grid">
-          ${reviewHtml}
-        </div>
-
-        <div style="margin-top: 20px; padding: 16px; border: 2px solid #1e1a16; border-radius: 12px; background: #fcfaf8; text-align: center;">
-          <div style="font-weight: 800; font-family: 'Inter', sans-serif; font-size: 1.1rem; margin-bottom: 10px;">⭐ My Year in Three Words</div>
-          <div style="display: flex; justify-content: center; gap: 20px;">
-            <span style="font-size: 1.5rem; font-weight: 700; font-family: 'Playfair Display', serif;">___________</span>
-            <span style="font-size: 1.5rem; font-weight: 700; font-family: 'Playfair Display', serif;">___________</span>
-            <span style="font-size: 1.5rem; font-weight: 700; font-family: 'Playfair Display', serif;">___________</span>
-          </div>
-        </div>
-
-        <div style="margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; font-weight: 700; font-family: 'Inter', sans-serif;">
-          <div style="padding: 12px; border: 2px solid #1e1a16; border-radius: 10px; background: #fcfaf8; text-align: center;">
-            ⭐ Overall Rating<br>
-            ☆☆☆☆☆
-          </div>
-          <div style="padding: 12px; border: 2px solid #1e1a16; border-radius: 10px; background: #fcfaf8; text-align: center;">
-            🎯 Goals Met<br>
-            ___ / ___
-          </div>
-          <div style="padding: 12px; border: 2px solid #1e1a16; border-radius: 10px; background: #fcfaf8; text-align: center;">
-            💪 Lessons Learned<br>
-            ___
-          </div>
-        </div>
-      </div>
-    `;
+    </div>`;
   }
 
   // ——— PDF DOWNLOAD ———
