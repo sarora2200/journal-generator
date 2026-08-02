@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2026 B&W Journal · Print-Ready Fonts</title>
+  <!-- Google Fonts – clean, print-friendly -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,700;14..32,800&family=Playfair+Display:ital,wght@0,700;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet" />
+  
+  <!-- html2canvas + jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
+  <style>
+    /* ——— RESET & BASE ——— */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f2efec;
+      color: #1e1a16;
+      padding: 24px;
+      line-height: 1.4;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+    #app { max-width: 1200px; margin: 0 auto; }
+
+    /* ——— HEADER ——— */
+    header {
+      text-align: center;
+      padding: 28px 20px 22px;
+      background: #faf8f6;
+      border-radius: 28px;
+      margin-bottom: 28px;
+      border: 2px solid #1e1a16;
+      box-shadow: 0 4px 0 #1e1a16;
+    }
+    header h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 700;
+      font-size: 2.8rem;
+      letter-spacing: -0.5px;
+      color: #111;
+    }
+    header p {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #2d2d2d;
+      opacity: 0.8;
+    }
+
+    /* ——— SETTINGS ——— */
+    .settings-panel {
+      background: #faf8f6;
+      padding: 22px 26px;
+      border-radius: 24px;
+      border: 2px solid #1e1a16;
+      box-shadow: 0 4px 0 #1e1a16;
+      margin-bottom: 32px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px 24px;
+      align-items: center;
+      justify-content: center;
+    }
+    .settings-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .settings-group label {
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #111;
+      min-width: 60px;
+    }
+    .btn-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .btn-group button {
+      padding: 6px 16px;
+      border: 2px solid #1e1a16;
+      background: white;
+      border-radius: 40px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      transition: 0.15s;
+      color: #1e1a16;
+    }
+    .btn-group button:hover { background: #e6e2dd; }
+    .btn-group button.active {
+      background: #1e1a16;
+      color: white;
+    }
+    .btn-generate, .btn-download {
+      padding: 12px 32px;
+      border: 2px solid #1e1a16;
+      border-radius: 60px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+      background: white;
+      color: #1e1a16;
+      box-shadow: 0 4px 0 #1e1a16;
+    }
+    .btn-generate:hover, .btn-download:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 #1e1a16;
+      background: #f0ede8;
+    }
+    .btn-generate:active, .btn-download:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #1e1a16;
+    }
+
+    /* ——— JOURNAL PREVIEW ——— */
+    .journal-preview {
+      background: #fcfaf8;
+      padding: 28px 24px;
+      border-radius: 28px;
+      border: 2px solid #1e1a16;
+      box-shadow: 0 4px 0 #1e1a16;
+      min-height: 500px;
+    }
+
+    /* ——— PAGE STYLES – HIGH-PRECISION PRINT FONTS ——— */
+    .journal-page {
+      width: 100%;
+      max-width: 820px;
+      margin: 0 auto 32px;
+      padding: 40px 44px;
+      background: white;
+      border-radius: 12px;
+      border: 2px solid #2d2d2d;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      page-break-after: always;
+      position: relative;
+      min-height: 700px;
+      color: #1a1a1a;
+      font-family: 'Source Serif 4', 'Georgia', serif;
+      font-size: 11pt;
+      line-height: 1.5;
+    }
+
+    /* Target exact typography for canvas rendering */
+    .journal-page .section-title {
+      font-family: 'Playfair Display', 'Georgia', serif;
+      font-weight: 700;
+      font-size: 2rem;
+      border-bottom: 4px solid #1a1a1a;
+      padding-bottom: 8px;
+      margin-bottom: 20px;
+      letter-spacing: -0.2px;
+      color: #111;
+      line-height: 1.2;
+    }
+    .journal-page .sub-heading {
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #2d2d2d;
+      line-height: 1.3;
+    }
+    .journal-page .body-text {
+      font-family: 'Source Serif 4', 'Georgia', serif;
+      font-size: 11pt;
+      line-height: 1.6;
+      color: #1a1a1a;
+    }
+    .journal-page .label {
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #1a1a1a;
+    }
+
+    /* Dotted Background */
+    .journal-page.dotted {
+      background-image: radial-gradient(circle, #b8b0a8 1.4px, transparent 1.4px);
+      background-size: 24px 24px;
+      background-color: #ffffff;
+    }
+
+    /* ——— COVER ——— */
+    .journal-page.cover {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 780px;
+      border: 4px solid #1a1a1a;
+      background: #faf8f6;
+      font-family: 'Playfair Display', serif;
+    }
+    .journal-page.cover h1 {
+      font-size: 3.8rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #111;
+      line-height: 1.1;
+    }
+    .journal-page.cover .year {
+      font-size: 6.5rem;
+      font-weight: 800;
+      color: #111;
+      border: 4px solid #111;
+      padding: 0.05em 0.3em;
+      border-radius: 20px;
+      background: white;
+      margin: 16px 0;
+      line-height: 1;
+    }
+    .journal-page.cover .subtitle {
+      font-size: 1.2rem;
+      font-weight: 600;
+      opacity: 0.7;
+    }
+    .cover-icon {
+      font-size: 5rem;
+      margin-bottom: 8px;
+      line-height: 1;
+    }
+
+    /* ——— MONTH GRID ——— */
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: 2px solid #2d2d2d;
+      border-radius: 12px;
+      padding: 10px;
+      background: #fcfaf8;
+      font-family: 'Inter', sans-serif;
+    }
+    .month-grid .day-header {
+      font-weight: 800;
+      padding: 6px 0;
+      color: #111;
+      border-bottom: 3px solid #2d2d2d;
+      font-size: 0.8rem;
+    }
+    .month-grid .day {
+      padding: 8px 0;
+      border-radius: 6px;
+      font-weight: 700;
+      background: white;
+      font-size: 0.9rem;
+    }
+    .month-grid .day.weekend { color: #b13e3e; }
+    .month-grid .day.empty { opacity: 0.25; }
+
+    /* ——— MOOD TRACKER ——— */
+    .mood-tracker-page .mood-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      width: 100%;
+      max-width: 560px;
+      margin: 18px auto;
+    }
+    .mood-tracker-page .mood-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 14px 8px;
+      border-radius: 16px;
+      border: 2.5px solid #1e1a16;
+      background: #fcfaf8;
+      font-family: 'Inter', sans-serif;
+    }
+    .mood-tracker-page .mood-item .emoji { font-size: 2.5rem; line-height: 1; }
+    .mood-tracker-page .mood-item .label {
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-top: 6px;
+      color: #111;
+    }
+    .mood-tracker-page .mood-item .checkbox {
+      margin-top: 8px;
+      width: 22px;
+      height: 22px;
+      border: 2.5px solid #1e1a16;
+      border-radius: 4px;
+      background: white;
+    }
+    .mood-tracker-page .mood-doodle {
+      font-size: 5rem;
+      margin: 10px 0;
+      padding: 16px;
+      border-radius: 60px;
+      width: 140px;
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f2efec;
+      border: 4px solid #1a1a1a;
+      line-height: 1;
+    }
+
+    /* ——— TRACKERS ——— */
+    .tracker-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .tracker-item {
+      padding: 12px 14px;
+      border: 2px solid #2d2d2d;
+      border-radius: 12px;
+      background: #fcfaf8;
+      font-family: 'Inter', sans-serif;
+    }
+    .tracker-item .label { font-weight: 800; display: block; margin-bottom: 6px; font-size: 0.9rem; }
+    .tracker-item .dots { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tracker-item .dot {
+      width: 22px; height: 22px;
+      border: 2px solid #1e1a16;
+      border-radius: 50%;
+      display: inline-block;
+      background: white;
+    }
+
+    /* ——— DOODLE GRID ——— */
+    .doodle-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .doodle-item {
+      text-align: center;
+      padding: 14px 6px;
+      border: 2px solid #2d2d2d;
+      border-radius: 14px;
+      background: #fcfaf8;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+    .doodle-item .icon {
+      font-size: 2.8rem;
+      display: block;
+      margin-bottom: 6px;
+      line-height: 1;
+    }
+
+    /* ——— FREE THOUGHTS ——— */
+    .free-thoughts-page {
+      min-height: 700px;
+      display: flex;
+      flex-direction: column;
+    }
+    .free-thoughts-page .thought-lines {
+      flex: 1;
+      margin-top: 14px;
+    }
+    .free-thoughts-page .thought-line {
+      border-bottom: 2px solid #b8b0a8;
+      padding: 14px 0 8px;
+      margin-bottom: 4px;
+      font-size: 1rem;
+      color: #1a1a1a;
+      min-height: 48px;
+      font-family: 'Source Serif 4', 'Georgia', serif;
+    }
+
+    /* ——— OTHER ELEMENTS ——— */
+    .journal-page ul, .journal-page li { font-weight: 500; font-family: 'Source Serif 4', 'Georgia', serif; }
+
+    /* ——— RESPONSIVE ——— */
+    @media (max-width: 768px) {
+      .settings-panel { flex-direction: column; align-items: stretch; }
+      .journal-page { padding: 24px 18px; }
+      .tracker-grid, .doodle-grid { grid-template-columns: 1fr; }
+      .mood-tracker-page .mood-grid { grid-template-columns: 1fr 1fr; }
+      .journal-page.cover h1 { font-size: 2.8rem; }
+      .journal-page.cover .year { font-size: 4.2rem; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>📓 2026 B&W Journal</h1>
+    <p>Coloring Icons • 200+ Pages • Print Ready</p>
+  </header>
+
+  <section class="settings-panel">
+    <div class="settings-group"><label>Size:</label>
+      <div class="btn-group">
+        <button class="btn-size active" data-size="a4">A4</button>
+        <button class="btn-size" data-size="a5">A5</button>
+      </div>
+    </div>
+    <div class="settings-group"><label>Background:</label>
+      <div class="btn-group">
+        <button class="btn-bg active" data-bg="dots">Dots</button>
+        <button class="btn-bg" data-bg="plain">Plain</button>
+      </div>
+    </div>
+    <div class="settings-group"><label>Pages:</label>
+      <div class="btn-group">
+        <button class="btn-pages active" data-pages="200">200</button>
+        <button class="btn-pages" data-pages="300">300</button>
+        <button class="btn-pages" data-pages="400">400</button>
+      </div>
+    </div>
+    <button id="btn-generate" class="btn-generate">✨ Generate</button>
+    <button id="btn-download" class="btn-download">📥 PDF</button>
+  </section>
+
+  <section id="journal-preview" class="journal-preview"></section>
+</div>
+
+<script>
+  const DATA = {
+    covers: [
+      { name: 'Cute Flower', icon: '🌸' }, { name: 'Plant Lover', icon: '🌿' },
+      { name: 'Polaroid', icon: '📷' }, { name: 'Elegant Floral', icon: '🌹' },
+      { name: 'Minimalist', icon: '◼️' }, { name: 'Vintage', icon: '📜' }
+    ],
+    monthlyThemes: {
+      January: ['Snow','Cozy','New Year'], February: ['Roses','Love','Chocolate'],
+      March: ['Frogs','Rainbow','Spring'], April: ['Tulips','Butterflies','Rain'],
+      May: ['Garden','Picnic','Flowers'], June: ['Sunshine','Beach','Art'],
+      July: ['Travel','Fireworks','Camping'], August: ['Sea','Sunflowers','Sailing'],
+      September: ['Leaves','Harvest','School'], October: ['Pumpkin','Spooky','Autumn'],
+      November: ['Sweater','Thankful','Forest'], December: ['Snowmen','Gifts','Holiday']
+    },
+    moodOptions: [
+      { label: 'Energetic', emoji: '⚡' }, { label: 'Happy', emoji: '😊' },
+      { label: 'Ok', emoji: '😐' }, { label: 'Tired', emoji: '😴' },
+      { label: 'Calm', emoji: '😌' }, { label: 'Excited', emoji: '🤩' },
+      { label: 'Grateful', emoji: '🙏' }, { label: 'Loved', emoji: '❤️' },
+      { label: 'Peaceful', emoji: '🕊️' }, { label: 'Motivated', emoji: '💪' },
+      { label: 'Inspired', emoji: '✨' }, { label: 'Playful', emoji: '🎭' }
+    ],
+    moodDoodles: [
+      { name: 'Apple', emoji: '🍎' }, { name: 'Bookshelf', emoji: '📚' },
+      { name: 'Camping', emoji: '⛺' }, { name: 'Cherry Blossom', emoji: '🌸' },
+      { name: 'Disco Ball', emoji: '🪩' }, { name: 'Frog', emoji: '🐸' },
+      { name: 'Ladybug', emoji: '🐞' }, { name: 'Love Letter', emoji: '💌' },
+      { name: 'Pumpkin', emoji: '🎃' }, { name: 'Rose', emoji: '🌹' },
+      { name: 'Sunflower', emoji: '🌻' }, { name: 'Tulip', emoji: '🌷' }
+    ],
+    doodles: ['Apple','Bear','Bunny','Candy Cane','Cloud','Deer','Firework','Frog','Ladybug','Latte','Penguin','Pie','Sailboat','Star','Sunflower','Rainbow','Heart','Moon','Cactus','Butterfly','Leaf','Compass','Mountain','Shell','Key'],
+    monthlyPages: ['Habit Tracker','Gratitude','Sleep','Water','Movies','Books','Playlist','Affirmations','Meal Planner','To-Do','Reflections','Bucket List'],
+    journalPrompts: ['What made you smile?','What are you grateful for?','Goal for this week?','Happy memory?','Self‑care idea?','Letter to future self','What are you proud of?','Perfect day?','3 things you love','Challenge overcome?','Place to visit?','What does happiness mean?'],
+    wellnessActivities: ['Meditate 5min','Walk in nature','Deep breathing','Journal','Stretch','Drink water','Gratitude','Read','Take a bath','Yoga','Healthy meal','8h sleep','Digital detox','Affirmations','Creative time'],
+    budgetCategories: ['Housing','Utilities','Groceries','Transport','Insurance','Healthcare','Entertainment','Dining','Shopping','Savings','Emergency','Charity'],
+    travelDestinations: ['Paris','Bali','Tokyo','New York','Rome','Sydney','Cape Town','Dubai','Barcelona','London','Rio','Bangkok','Santorini','Maldives','Vancouver','Amsterdam']
+  };
+
+  let state = {
+    size: 'a4',
+    background: 'dots',
+    pageCount: 200,
+    includeVisionBoard: true,
+    includeGoalSetting: true,
+    includeYearlyReview: true,
+    includeWeeklyPlanner: true,
+    includeJournalPrompts: true,
+    includeWellness: true,
+    includeBudget: true,
+    includePasswordTracker: true,
+    includeTravelBucket: true,
+    journal: null
+  };
+
+  function randomPick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function shuffleArray(arr) { const a = [...arr]; for (let i=a.length-1; i>0; i--) { const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+  function getMonthDays(month) { return new Date(2026, month, 0).getDate(); }
+  function getMonthStartDay(month) { return new Date(2026, month-1, 1).getDay(); }
+  function getMoodColors() { return DATA.moodOptions.slice(0,6); }
+  function getDoodleEmoji(name) {
+    const map = { 'Apple':'🍎','Bear':'🐻','Bunny':'🐰','Candy Cane':'🍭','Cloud':'☁️','Deer':'🦌','Firework':'🎆','Frog':'🐸','Ladybug':'🐞','Latte':'☕','Penguin':'🐧','Pie':'🥧','Sailboat':'⛵','Star':'⭐','Sunflower':'🌻','Rainbow':'🌈','Heart':'💖','Moon':'🌙','Cactus':'🌵','Butterfly':'🦋','Leaf':'🍃','Compass':'🧭','Mountain':'🏔️','Shell':'🐚','Key':'🔑' };
+    return map[name] || '✨';
+  }
+
+  function generateJournal() {
+    const cover = randomPick(DATA.covers);
+    const months = Object.keys(DATA.monthlyThemes);
+    const shuffledDoodles = shuffleArray(DATA.doodles);
+    const shuffledMoodDoodles = shuffleArray(DATA.moodDoodles);
+    const moods = getMoodColors();
+    const shuffledPrompts = shuffleArray(DATA.journalPrompts);
+    const shuffledWellness = shuffleArray(DATA.wellnessActivities);
+    const shuffledDest = shuffleArray(DATA.travelDestinations);
+
+    let pages = [];
+    let pageCount = 0;
+    const target = state.pageCount;
+
+    pages.push({ type: 'cover', cover, year:2026 }); pageCount++;
+    if (state.includeVisionBoard) { pages.push({ type: 'vision-board', year:2026 }); pageCount++; }
+    if (state.includeGoalSetting) { pages.push({ type: 'goals', year:2026 }); pageCount++; }
+    if (state.includeYearlyReview) { pages.push({ type: 'yearly-review', year:2026 }); pageCount++; }
+    if (state.includeTravelBucket) { pages.push({ type: 'travel-bucket', destinations: shuffledDest.slice(0,10) }); pageCount++; }
+    if (state.includeBudget) { pages.push({ type: 'budget', categories: DATA.budgetCategories.slice(0,10), year:2026 }); pageCount++; }
+    if (state.includePasswordTracker) { pages.push({ type: 'password-tracker' }); pageCount++; }
+    if (state.includeWellness) { pages.push({ type: 'wellness', activities: shuffledWellness.slice(0,12) }); pageCount++; }
+    if (state.includeJournalPrompts) { pages.push({ type: 'journal-prompts', prompts: shuffledPrompts.slice(0,10) }); pageCount++; }
+    
+    if (state.includeWeeklyPlanner) {
+      for (let w=1; w<=4 && pageCount<target; w++) {
+        pages.push({ type: 'weekly-planner', week: w, month: months[w%12] });
+        pageCount++;
+      }
+    }
+
+    for (let mi=0; mi<months.length && pageCount<target; mi++) {
+      const month = months[mi];
+      const themeOpt = DATA.monthlyThemes[month];
+      const chosenTheme = randomPick(themeOpt);
+      const moodDoodle = shuffledMoodDoodles[mi % shuffledMoodDoodles.length];
+      const days = getMonthDays(mi+1);
+      const start = getMonthStartDay(mi+1);
+
+      pages.push({ type: 'month', month, theme: chosenTheme, moodDoodle, daysInMonth: days, startDay: start });
+      pageCount++; if (pageCount>=target) break;
+      pages.push({ type: 'mood-tracker', month, moodDoodle, moods });
+      pageCount++; if (pageCount>=target) break;
+      const trackers = shuffleArray(DATA.monthlyPages).slice(0,6);
+      pages.push({ type: 'trackers', month, trackers });
+      pageCount++; if (pageCount>=target) break;
+      const doodSet = shuffleArray(DATA.doodles).slice(0,6);
+      pages.push({ type: 'month-doodles', month, doodles: doodSet });
+      pageCount++; if (pageCount>=target) break;
+      pages.push({ type: 'reflection', month });
+      pageCount++; if (pageCount>=target) break;
+      pages.push({ type: 'free-thoughts', month });
+      pageCount++; if (pageCount>=target) break;
+    }
+
+    while (pageCount < target) {
+      const extra = randomPick(['free-thoughts','doodles','trackers','reflection','journal-prompts','wellness']);
+      if (extra === 'free-thoughts') { pages.push({ type: 'free-thoughts', month: 'Reflect' }); pageCount++; }
+      else if (extra === 'doodles') { pages.push({ type: 'doodles', doodles: shuffleArray(DATA.doodles).slice(0,8) }); pageCount++; }
+      else if (extra === 'trackers') { pages.push({ type: 'trackers', month: 'Extra', trackers: shuffleArray(DATA.monthlyPages).slice(0,6) }); pageCount++; }
+      else if (extra === 'reflection') { pages.push({ type: 'reflection', month: 'Reflection' }); pageCount++; }
+      else if (extra === 'journal-prompts') { pages.push({ type: 'journal-prompts', prompts: shuffleArray(DATA.journalPrompts).slice(0,8) }); pageCount++; }
+      else if (extra === 'wellness') { pages.push({ type: 'wellness', activities: shuffleArray(DATA.wellnessActivities).slice(0,10) }); pageCount++; }
+    }
+
+    state.journal = pages;
+    renderJournal(pages);
+  }
+
+  function renderJournal(pages) {
+    const container = document.getElementById('journal-preview');
+    let html = `<div class="journal-container">`;
+    pages.forEach(p => { html += renderPage(p); });
+    html += '</div>';
+    container.innerHTML = html;
+  }
+
+  function renderPage(page) {
+    switch (page.type) {
+      case 'cover': return renderCover(page);
+      case 'vision-board': return renderVisionBoard(page);
+      case 'goals': return renderGoals(page);
+      case 'yearly-review': return renderYearlyReview(page);
+      case 'travel-bucket': return renderTravelBucket(page);
+      case 'budget': return renderBudget(page);
+      case 'password-tracker': return renderPasswordTracker(page);
+      case 'wellness': return renderWellness(page);
+      case 'journal-prompts': return renderJournalPrompts(page);
+      case 'weekly-planner': return renderWeeklyPlanner(page);
+      case 'month': return renderMonth(page);
+      case 'mood-tracker': return renderMoodTracker(page);
+      case 'trackers': return renderTrackers(page);
+      case 'doodles': return renderDoodles(page);
+      case 'month-doodles': return renderMonthDoodles(page);
+      case 'reflection': return renderReflection(page);
+      case 'free-thoughts': return renderFreeThoughts(page);
+      default: return '';
+    }
+  }
+
+  function renderCover(p) {
+    const { cover, year } = p;
+    return `<div class="journal-page cover ${state.background === 'dots' ? 'dotted' : 'plain'}" style="border-color:#111;">
+      <div class="cover-icon">${cover.icon}</div>
+      <h1>YOUR 2026 JOURNAL</h1>
+      <div class="year">${year}</div>
+      <div style="width:120px;height:4px;background:#111;margin:12px auto;"></div>
+      <p style="font-size:1.3rem;font-weight:600;opacity:0.8;font-family:'Inter',sans-serif;">${cover.name} Edition</p>
+      <p style="font-size:0.95rem;margin-top:28px;opacity:0.6;font-family:'Inter',sans-serif;">${state.pageCount}+ Pages · Ultimate B&W</p>
+      <div style="margin-top:20px;font-weight:700;letter-spacing:2px;font-family:'Inter',sans-serif;">✧ DREAM · PLAN · ACHIEVE ✧</div>
+    </div>`;
+  }
+
+  function renderVisionBoard(p) {
+    const { year } = p;
+    const items = ['Career','Health','Relationships','Growth','Travel','Creativity','Finance','Spirituality'];
+    let html = items.map(v => `<div style="padding:14px;border:2px solid #1e1a16;border-radius:14px;text-align:center;font-weight:700;background:#fcfaf8;font-family:'Inter',sans-serif;"><div style="font-size:2.2rem;line-height:1;">${randomPick(['🎯','💫','🌟','✨','🌈','🦋'])}</div><div style="margin-top:6px;">${v}</div><div style="font-size:0.8rem;opacity:0.5;margin-top:4px;border-bottom:2px dashed #888;padding-bottom:4px;">_________________</div></div>`).join('');
+    return `<div class="journal-page ${state.background === 'dots' ? 'dotted' : 'plain'}" style="border-color:#1a1a1a;">
+      <div class="section-title">✨ Vision Board ${year}</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">${html}</div>
+      <div style="margin-top:20px;padding:16px;border:2px solid #1e1a16;border-radius:14px;text-align:center;font-weight:600;background:#f2efec;font-family:'Playfair Display',serif;font-style:italic;font-size:1.1rem;">"The future belongs to those who believe in their dreams."</div>
+    </div>`;
+  }
+
+  function renderGoals(p) {
+    const { year } = p;
+    const cats = ['Personal','Professional','Health','Financial','Creative','Travel'];
+    let html = cats.map(c => `<div style="padding:12px;border:2px solid #1e1a16;border-radius:10px;border-left:6px solid #111;background:#fcfaf8;font-family:'Inter',sans-serif;"><div style="font-weight:800;font-size:1.05rem;">${c} Goals</div><div style="margin-top:6px;font-weight:600;">1. _________________</div><div style="font-weight:600;">2. _________________</div><div style="font-weight:600;">3. _________________</div></div>`).join('');
+    return `<div class="journal-page ${state.background === 'dots' ? 'dotted' : 'plain'}" style="border-color:#1a1a1a;">
+      <div class="section-title">🎯 ${year} Goals</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">${html}</div>
+      <div style="margin-top:20px;padding:16px;border:2px solid #1e1a16;border-radius:14px;text-align:center;font-weight:700;font-size:1.1rem;background:#f2efec;font-family:'Inter',sans-serif;">💪 #1 Goal: ___________________________________</div>
+    </div>`;
+  }
+
+  function renderYearlyReview(p) {
+    const { year } = p;
+    const qs = ['Biggest achievement?','What did you learn?','Most grateful for?','Challenge overcome?','Favorite memory?','Looking forward to?'];
+    let html = qs.map(q => `<div style="padding:10px 14px;border:2px solid #1e1a16;border-radius:10px;margin-bottom:8px;border-left:6px solid #111;background:#fcfaf8;font-family:'Source Serif 4',serif;font-size:11pt;"><div style="font-weight:700;font-family:'Inter',sans-serif;font-size:0.95rem;">${q}</div><div style="height:28px;border-bottom:2px dashed #888;"></div></div>`).join('');
+    return `<div class="journal-page ${state.background === 'dots' ? 'dotted' : 'plain'}" style="border-color:#1a1a1a;">
+      <div class="section-title">📝 Yearly Review ${year}</div>
+      ${html}
+      <div style="margin-top:16px;padding:14px;border:2px solid #1e1a16;border-radius:14px;text-align:center;background:#f2efec;font-family:'Inter',sans-serif;"><span style="font-size:2rem;line-height:1;">⭐</span><div style="font-weight:700;font-size:1.1rem;margin-top:4px;">Overall rating: ☆☆☆☆☆</div></div>
+    </div>`;
+  }
+
+  function renderTravelBucket(p) {
+    const { destinations } = p;
+    let html = destinations.map(d => `<div style="padding:8px 12px;border:2px solid #1e1a16;border-radius:10px;display:flex;align-items:center;gap:10px;font-weight:600;background:#fcfaf8;font-family:'Inter',sans-serif;"><span>✈️</span><span>${d}</span><span style="margin-left:auto;opacity:0.4;">☐</span></div>`).join('');
+    return `<div class="journal-page ${state.background === 'dots' ? 'dotted' : 'plain'}" style="border-color:#1a1a1a;">
+      <div class="section-title">✈️ Travel Bucket List</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">${html}</div>
+      <div style="margin-top:18px;padding:14px;border:2px solid #1e1a16;border-radius:14px;text-align:center;font-weight:600;background:#f2efec;font-family:'Inter',sans-serif;">🌍 Top 3: 1._____ 2._____ 3._____</div>
+    </div>`;
+  }
+
+  function renderBudget(p) {
+    const { categories, year } = p;
+    let html = categories.map(c => `<div style="padding:8px 12px;border:2px solid #1e1a16;border-radius:8px;border-left:6px solid #111;display:flex;justify-content:space-between;font-weight:600;background:#fcfaf8;font-family:'Inter',sans-serif;"><span>${c}</span><span style="opacity:0.5;">$______</span></div>`).join('');
+    return `<div class="journal-page ${state.background === 'dots' ? 'dotted' : 'plain'}" style="border-color:#1a1a1a;">
+      <div class="section-title">💰 ${year} Budget</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">${html}</div>
+      <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-weight:600;font-family:'Inter',sans-serif;"><div style="padding:10px;border:2px solid #1e1a16;border-radius:10px;text-align:center;background:#fcfaf8;">Income $____</div><div style="padding:10px;border:2px solid #1e1a16;border-radius:10px;text-align:center;background:#fcfaf8;">Expenses $____</div><div style="padding:10px;border:2px solid #1e1a16;border-radius:10px;text-align:center;background:#fcfaf8;">Savings $____</div></div>
+    </div>`;
+  }
+
+  function renderPasswordTracker() {
+    const services = ['Email','Social','Banking','Shopping','Streaming','Work','Cloud','Utilities'];
+    let html = services.map(s => `<div style="padding:8px;border:2px solid #1e1a16;border-radius:8px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;font-weight:600;background:#fcfaf8;border-bottom:1px solid #888;font-family:'Inter',sans-serif;"><span>${s}</span><span>_________________</span><span>🔒</span></div>`).join('');
+    return `<div class="journal-page ${state.background === 'dots' ? 'dotted' : 'plain'}" style="border-color:#1a1a1a;">
+      <div class="section-title">🔐 Password Tracker</div>
+      <div style="display:grid;gap:4px;">${html}</div>
+      <div style="margin-top:12px;padding:10px;border:2px solid #1e1a16;border-radius:10px;text-align:center;font-weight:500;background:#f2efec;font-family:'Inter',sans-serif;">⚠️ Keep secure</div>
+    </div>`;
+  }
+
+  function renderWellness(p) {
+    const { activities } = p;
+    let html = activities.map(a => `<div style="padding:8px 14px;border:2px solid #1e1a16;border-radius:10px;display:flex;align-items:center;gap:12px;border-left:6px solid #111;font-weight:600;background:#fcfaf8;font-family:'Inter',sans-serif;"><span>🧘</span><span>${a}</span><span style="margin-left:auto;display:flex;gap:4px;">${Array(7).fill(0).map(() => `<span style="width:18px;height:18px;border:2px solid #1e1a16;border-radius:50%;display:inline-block;background:white;"></span>`).join('')}</span></div>`).join('');
+    return `<div class="journal-page ${state.background === 'dots' ? 'dotted' : 'plain'}" style="border-color:#1a1a1a;">
+      <div class="section-title">🧘 Wellness Tracker</div>
+      <div style="display:grid;gap:6px;">${html}</div>
+      <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-weight:600;font-family:'Inter',sans-serif;"><div style="padding:8px;border:2px solid #1e1a16;border-radius:10px;text-align:center;background:#fcfaf8;">😴 Sleep: __ hrs</div><div style="padding:8px;border:2px solid #1e1a16;border-radius:10px;text-align:center;background:#fcfaf8;">💧 Water: __</div><div style="padding:8px;border:2px solid #1e1a16;border-radius:10px;text-align:center;background:#fcfaf8;">🏃 Exercise: __ min</div></div>
+    </div>`;
+  }
+
+  function renderJournalPrompts(p) {
+    const { prompts } = p;
+    let html = prompts.map((q,i) => `<div style="padding:10px 14px;border:2px solid #1e1a16;border-radius:10px;margin-bottom:8px;border-left:6px solid #111;background:#fcfaf8;font-family:'Source Serif 4',serif;font-size:11pt;"><div style="font-weight:700;font-family:'Inter',sans-serif;font-size:0.85rem;">Prompt ${i+1}:</div><div style="font-weight:500;">${q}</div><div style="height:22px;border-bottom:2px dashed #888;"></div></div>`).join('');
+    return `<div class="journal-page ${state.background === 'dots' ? 'dotted' : 'plain'}" style="border-color:#1a1a1a;">
+      <div class="section-title">📝 Journal Prompts</div>
+      ${html}
+      <div style="margin-top:12px;padding:10px;border:2px solid #1e1a16;border-radius:10px;text-align:center;font-weight:500;background:#f2efec;font-family:'Inter',sans-serif;">✍️ Write freely</div>
+    </div>`;
+  }
+
+  function renderWeeklyPlanner(p) {
+    const { week, month } = p;
+    const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+    let html = days.map(d => `<div style="padding:8px 10px;border-bottom:2px solid #888;display:flex;align-items:center;gap:10px;font-weight:600;font-family:'Inter',sans-serif;"><span style="min-width:90px;">${d}</span><span style="border-bottom:2px solid #888;flex:1;height:24px;"></span></div>`).join('');
+    return `<div class="journal-page ${state.background === 'dots' ? 'dotted' : 'plain'}" style="border-color:#1a1a1a;">
+      <div class="section-title" style="font-size:1.8rem;">📅 Week ${week} · ${month}</div>
+      ${html}
+      <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:14px;font-family:'Inter',sans-serif;"><div style="padding:12px;border:2px solid #1e1a16;border-radius:12px;font-weight:700;background:#fcfaf8;">🎯 Goals: 1._____ 2._____</div><div style="padding:12px;border:2px solid #1e1a16;border-radius:12px;font-weight:700;background:#fcfaf8;">💡 Wins: 1._____ 2._____</div></div>
+    </div>`;
+  }
+
+  function renderMonth(p) {
+    const { month, theme, moodDoodle, daysInMonth, startDay } = p;
+    let daysHtml = '';
+    ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d => daysHtml += `<div class="day-header">${d}</div>`);
+    for (let i=0; i<startDay; i++) daysHtml += `<div class="day empty"></div>`;
+    for (let d=1; d<=daysInMonth; d++) {
+      const weekend = (startDay+d-1)%7===0 || (startDay+d-1)%7===6;
+      daysHtml += `<div class="day ${weekend?'weekend':''}">${d}</div>`;
+    }
+    return `<div class="journal-page ${state.background === 'dots' ? 'dotted' : 'plain'}" style="border-color:#1a1a1a;">
+      <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:4px solid #111;padding-bottom:10px;margin-bottom:18px;"><span style="font-size:2rem;font-weight:900;font-family:'Playfair Display',serif;">📅 ${month} 2026</span><span style="font-weight:700;opacity:0.7;font-family:'Inter',sans-serif;">${theme}</span></div>
+      <div class="month-grid">${daysHtml}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px;font-family:'Inter',sans-serif;"><div style="padding:14px;border:2px solid #1e1a16;border-radius:14px;border-left:6px solid #111;text-align:center;font-weight:700;background:#fcfaf8;"><span style="font-size:2.8rem;line-height:1;">${moodDoodle.emoji}</span><div style="margin-top:4px;">${moodDoodle.name}</div></div><div style="padding:14px;border:2px solid #1e1a16;border-radius:14px;border-left:6px solid #111;font-weight:700;background:#fcfaf8;">🎯 Focus: ${randomPick(['Growth','Joy','Peace','Health','Creativity'])}</div></div>
+      <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-weight:600;border:2px solid #1e1a16;padding:12px;border-radius:12px;background:#fcfaf8;font-family:'Inter',sans-serif;">🎯 Goal: _____  ⭐ Highlight: _____  🙏 Gratitude: _____</div>
+    </div>`;
+  }
+
+  function renderMoodTracker(p) {
+    const { month, moodDoodle, moods } = p;
+    let html = moods.slice(0,6).map(m => `<div class="mood-item"><span class="emoji">${m.emoji}</span><span class="label">${m.label}</span><span class="checkbox"></span></div>`).join('');
+    return `<div class="journal-page mood-tracker-page ${state.background === 'dots' ? 'dotted' : 'plain'}" style="border-color:#1a1a1a;">
+      <div style="display:flex;justify-content:space-between;width:100%;border-bottom:4px solid #111;padding-bottom:10px;font-family:'Playfair Display',serif;"><span style="font-size:2rem;font-weight:900;">${month} 2026</span><span style="font-weight:700;font-family:'Inter',sans-serif;">Mood Tracker</span></div>
+      <div class="mood-doodle">${moodDoodle.emoji}</div>
+      <div style="font-weight:700;font-size:1.3rem;font-family:'Playfair Display',serif;">${moodDoodle.name}</div>
+      <div class="mood-grid">${html}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;margin-top:12px;font-weight:600;font-family:'Inter',sans-serif;"><div style="padding:8px;border:2px solid #1e1a16;border-radius:10px;background:#fcfaf8;">⭐ Highlight: _____</div><div style="padding:8px;border:2px solid #1e1a16;border-radius:10px;background:#fcfaf8;">📝 Notes: _____</div></div>
+    </div>`;
+  }
+
+  function renderTrackers(p) {
+    const { month, trackers } = p;
+    let html = trackers.slice(0,8).map(t => `<div class="tracker-item"><span class="label">${t}</span><div class="dots">${Array(8).fill(0).map(() => `<span class="dot"></span>`).join('')}</div></div>`).join('');
+    return `<div class="journal-page ${state.background === 'dots' ? 'dotted' : 'plain'}" style="border-color:#1a1a1a;">
+      <div class="section-title" style="font-size:1.8rem;">📊 ${month} Trackers</div>
+      <div class="tracker-grid">${html}</div>
+    </div>`;
+  }
+
+  function renderDoodles(p) {
+    const { doodles } = p;
+    let html = doodles.slice(0,8).map(d => `<div class="doodle-item"><span class="icon">${getDoodleEmoji(d)}</span><div>${d}</div></div>`).join('');
+    return `<div class="journal-page ${state.background === 'dots' ? 'dotted' : 'plain'}" style="border-color:#1a1a1a;">
+      <div class="section-title" style="font-size:1.8rem;">🎨 Doodle Practice</div>
+      <div class="doodle-grid">${html}</div>
+    </div>`;
+  }
+
+  function renderMonthDoodles(p) {
+    const { month, doodles } = p;
+    let html = doodles.slice(0,6).map(d => `<div class="doodle-item"><span class="icon">${getDoodleEmoji(d)}</span><div>${d}</div></div>`).join('');
+    return `<div class="journal-page ${state.background === 'dots' ? 'dotted' : 'plain'}" style="border-color:#1a1a1a;">
+      <div class="section-title" style="font-size:1.8rem;">🎨 ${month} Doodles</div>
+      <div class="doodle-grid">${html}</div>
+    </div>`;
+  }
+
+  function renderReflection(p) {
+    const { month } = p;
+    const qs = ['What went well?','What could be better?','What did I learn?','What am I grateful for?','Focus for next month?'];
+    let html = qs.map(q => `<div style="padding:8px 14px;border:2px solid #1e1a16;border-radius:10px;margin-bottom:8px;border-left:6px solid #111;background:#fcfaf8;font-family:'Source Serif 4',serif;font-size:11pt;"><div style="font-weight:700;font-family:'Inter',sans-serif;font-size:0.9rem;">${q}</div><div style="height:26px;border-bottom:2px dashed #888;"></div></div>`).join('');
+    return `<div class="journal-page ${state.background === 'dots' ? 'dotted' : 'plain'}" style="border-color:#1a1a1a;">
+      <div class="section-title" style="font-size:1.8rem;">📖 ${month} Reflection</div>
+      ${html}
+      <div style="margin-top:14px;padding:12px;border:2px solid #1e1a16;border-radius:14px;text-align:center;font-weight:700;background:#f2efec;font-family:'Inter',sans-serif;">⭐ Highlight: ________________________________</div>
+    </div>`;
+  }
+
+  function renderFreeThoughts(p) {
+    const { month } = p;
+    let lines = '';
+    for (let i=0; i<14; i++) {
+      lines += `<div class="thought-line">&nbsp;</div>`;
+    }
+    return `<div class="journal-page free-thoughts-page ${state.background === 'dots' ? 'dotted' : 'plain'}" style="border-color:#1a1a1a;">
+      <div class="section-title" style="display:flex;justify-content:space-between;align-items:center;">
+        <span>📝 Free Thoughts · ${month}</span>
+        <span style="font-size:0.85rem;font-weight:400;opacity:0.6;font-family:'Inter',sans-serif;">write & color</span>
+      </div>
+      <div class="thought-lines" style="margin-top:10px;">${lines}</div>
+      <div style="margin-top:20px;text-align:right;font-weight:400;opacity:0.5;font-size:0.85rem;border-top:2px solid #b0a8a0;padding-top:10px;font-family:'Inter',sans-serif;">— color the icons! —</div>
+    </div>`;
+  }
+
+  // ============================================================
+  // PDF EXPORT WITH Crisp FONT CAPTURE
+  // ============================================================
+  async function downloadPDF() {
+    const container = document.getElementById('journal-preview');
+    const pages = container.querySelectorAll('.journal-page');
+    if (!pages.length) { alert('Generate a journal first!'); return; }
+
+    const btn = document.getElementById('btn-download');
+    btn.textContent = '⏳ Preparing Fonts...';
+    btn.disabled = true;
+
+    try {
+      // 1. Ensure fonts are 100% loaded before rendering to canvas
+      await document.fonts.ready;
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: state.size === 'a4' ? [595, 842] : [420, 595],
+        hotfixes: ['px_scaling']
+      });
+
+      const total = pages.length;
+
+      for (let i = 0; i < total; i++) {
+        btn.textContent = `⏳ ${Math.round(((i + 1) / total) * 100)}%`;
+
+        // 2. High resolution canvas with font optimization flags
+        const canvas = await html2canvas(pages[i], {
+          scale: 3, // Crisp text rendering
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          width: pages[i].offsetWidth,
+          height: pages[i].offsetHeight,
+          onclone: (clonedDoc) => {
+            // Apply font sharpness styles inside cloned document
+            const style = clonedDoc.createElement('style');
+            style.innerHTML = `
+              * {
+                -webkit-font-smoothing: antialiased !important;
+                -moz-osx-font-smoothing: grayscale !important;
+                text-rendering: optimizeLegibility !important;
+              }
+            `;
+            clonedDoc.head.appendChild(style);
+          }
+        });
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.98);
+        const w = pdf.internal.pageSize.getWidth();
+        const h = pdf.internal.pageSize.getHeight();
+
+        if (i > 0) pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', 0, 0, w, h);
+      }
+
+      pdf.save(`2026_BW_journal_${state.pageCount}pages.pdf`);
+    } catch(e) {
+      console.error(e);
+      alert('PDF generation error');
+    }
+
+    btn.textContent = '📥 PDF';
+    btn.disabled = false;
+  }
+
+  // ============================================================
+  // EVENTS
+  // ============================================================
+  document.querySelectorAll('.btn-size').forEach(b => b.addEventListener('click', function() { document.querySelectorAll('.btn-size').forEach(x=>x.classList.remove('active')); this.classList.add('active'); state.size=this.dataset.size; }));
+  document.querySelectorAll('.btn-bg').forEach(b => b.addEventListener('click', function() { document.querySelectorAll('.btn-bg').forEach(x=>x.classList.remove('active')); this.classList.add('active'); state.background=this.dataset.bg; }));
+  document.querySelectorAll('.btn-pages').forEach(b => b.addEventListener('click', function() { document.querySelectorAll('.btn-pages').forEach(x=>x.classList.remove('active')); this.classList.add('active'); state.pageCount=parseInt(this.dataset.pages); }));
+  document.getElementById('btn-generate').addEventListener('click', generateJournal);
+  document.getElementById('btn-download').addEventListener('click', downloadPDF);
+  document.addEventListener('DOMContentLoaded', generateJournal);
+</script>
+</body>
+</html>
